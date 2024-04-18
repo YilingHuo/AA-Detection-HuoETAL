@@ -14,7 +14,7 @@ from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
 import sys
 sys.path.append("..")
 # or sys.path.append("/Users/full/path/to/file")
-from functions import areaavg_lat,seasonavg,seasonget,smOLSconfidencelev,statslinregressts_slopepvalue
+from functions import (areaavg_lat,seasonavg,seasonget,smOLSconfidencelev,statslinregressts_slopepvalue)
 idataset=0 #0:HadCRUT;1:ERA5
 clev=0.05#confidence level
 nwndw=3;naa=7### # of windows; # of AA matrices
