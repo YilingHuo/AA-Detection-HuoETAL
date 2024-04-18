@@ -14,8 +14,8 @@ from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
 import sys
 sys.path.append("..")
 # or sys.path.append("/Users/full/path/to/file")
-from functions import areaavg_lat,seasonget,smOLSconfidencelev,statslinregressts_slopepvalue,findvariablefile,readinvariable,moving_average,dataanomaly,
-calcsatspechum,rolling_mean_along_axis,seasonal_rolling_mean_along_axis
+from functions import (areaavg_lat,seasonget,smOLSconfidencelev,statslinregressts_slopepvalue,findvariablefile,readinvariable,moving_average,dataanomaly,
+calcsatspechum,rolling_mean_along_axis,seasonal_rolling_mean_along_axis)
 
 
 kernel='' ###'' for using the CAM5 kernel
