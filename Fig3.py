@@ -14,7 +14,7 @@ from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
 import sys
 sys.path.append("..")
 # or sys.path.append("/Users/full/path/to/file")
-from functions import areaavg_lat,seasonavg,seasonget,smOLSconfidencelev,statslinregressts_slopepvalue
+from functions import (areaavg_lat,seasonavg,seasonget,smOLSconfidencelev,statslinregressts_slopepvalue)
 datasets=['HadCRUT','ERA5','CESM2LE']
 ndataset=len(datasets)
 clev=0.05#confidence level
