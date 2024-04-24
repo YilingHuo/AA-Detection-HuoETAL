@@ -43,6 +43,7 @@ nensemble=int(len(files)/ntimeslice)
 ds=nc.Dataset(files[0]);latcesm=ds['lat'][:]
 aaensttl=nensemble+ndataset-1
 aa=np.zeros([nseason,naa+2,aaensttl,nyear])+np.nan### extra ones for significant trend/trend
+aaens=np.zeros([nseason,naa+2,nyear])+np.nan
 for iseason in range(nseason):
     m1=m11[iseason];m2=m21[iseason]
     stryr1=stryr+0;refyr11=refyr1+0
@@ -55,7 +56,7 @@ for iseason in range(nseason):
     else:
         nmonth=m2-m1
     stryraa1=stryr1-mvtrndgap
-    icount=0
+    icount=0;enscount=0;
     for idataset in range(aaensttl):#0:HadCRUT;1:ERA5;2-:CESM2_LE
         if idataset<1:
             ds=nc.Dataset('/global/cfs/cdirs/m1199/huoyilin/cscratch/HadCRUT.5.0.1.0.analysis.anomalies.ensemble_mean.nc')
@@ -68,6 +69,7 @@ for iseason in range(nseason):
             lat=ds['latitude'][:]
             icount+=1
         else:
+            enscount+=1
             lat=latcesm
             filestryr=1850;varname='TREFHT'
             iens=(idataset-icount)*ntimeslice
@@ -84,6 +86,8 @@ for iseason in range(nseason):
         t_s=seasonavg(t,m1,m2,nyearaa)
         t_areaavgaa=areaavg_lat(t_s,lat,latlim=arealatlim)-t_areaavgref
         t_glbavgaa=areaavg_lat(t_s,lat,latlim=glblatlim)-t_glbavgref;del t,t_s
+        if enscount<2:        t_areaavgref1=t_areaavgref+0;t_glbavgref1=t_glbavgref+0;t_areaavgaa1=t_areaavgaa+0;t_glbavgaa1=t_glbavgaa+0
+        else:        t_areaavgref1+=t_areaavgref;t_glbavgref1+=t_glbavgref;t_areaavgaa1+=t_areaavgaa;t_glbavgaa1+=t_glbavgaa
         #{SAT anomaly in Arctic} – {SAT anomaly in NH}
         # Convert array of integers to pandas series
         numbers_series = pd.Series(t_areaavgaa-t_glbavgaa)
@@ -129,11 +133,28 @@ for iseason in range(nseason):
                 aa[iseason,6,idataset,iyear]=aa[iseason,naa+1,idataset,iyear]+0
             tmpglb=t_glbavgaa[iyear:tmp];tmparea=t_areaavgaa[iyear:tmp]
             aa[iseason,3,idataset,iyear]=statslinregressts_slopepvalue(tmpglb,tmparea)[0]
-fntsz=18;letters='abcdefghijklmn';linew=3;alphal=.3;alphas=.1
+t_areaavgref1/=enscount;t_glbavgref1/=enscount;t_areaavgaa1/=enscount;t_glbavgaa1/=enscount
+numbers_series = pd.Series(t_areaavgaa1-t_glbavgaa1)
+# Get the window of series of observations of specified window size
+# Create a series of moving averages of each window
+# Convert pandas series back to list
+moving_averages_list = numbers_series.rolling(window_size).mean().tolist()
+# Remove null entries from the list
+aaens[iseason,0] = moving_averages_list[window_size - 1:]  
+#the AA index: the ratio of the Arctic-mean to the global-mean SAT changes relative to the 1980–2009 mean
+numbers_series = pd.Series(t_areaavgaa1/t_glbavgaa1)
+moving_averages_list = numbers_series.rolling(window_size).mean().tolist()
+aaens[iseason,4]=moving_averages_list[window_size - 1:]
+# (SAT anomaly in HA/SD in Arctic)/(global SAT anomaly/global SD)
+numbers_series = pd.Series((t_areaavgaa1/np.std(t_areaavgaa1))/(t_glbavgaa1/np.std(t_glbavgaa1)))
+moving_averages_list = numbers_series.rolling(window_size).mean().tolist()
+aaens[iseason,5]=moving_averages_list[window_size - 1:]
+fntsz=20;letters='abcdefghijklmn';linew=3;alphal=.3;alphas=.1
 fig, axes = plt.subplots(nrows=4, ncols=2,figsize=(16, 16), facecolor='w')
 indexyr=np.arange(stryr,endyr+1)
 ymin=[-.8,-2,-2,-2,-2,-.5,-.5]
 ymax=[2.5,12,12,12,12,4,4]
+colors=['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#bcbd22', '#17becf']
 for iaa in range(naa):    
     ax1 = axes.flat[iaa]
     stryr1=stryr+0;refyr11=refyr1+0
@@ -152,17 +173,17 @@ for iaa in range(naa):
         elif iaa==6:
             ax1.plot(indexyr,abs(aa[iseason,naa+1,idataset]),lw=linew,color=line.get_color() ,alpha=alphal)
     n1=ndataset-1
-    ensavg=np.nanmean(aa[iseason,iaa,n1:],axis=0)
+    ensavg=aaens[iseason,iaa]
     stddv=np.nanstd(aa[iseason,iaa,n1:], axis=0)
     line,=ax1.plot(indexyr,ensavg,lw=linew,color=colors[ndataset-1],label=datasets[-1])
     if iaa==1:
         ii = np.isnan(ensavg)
-        ensavg[ii]=np.nanmean(aa[iseason,naa,n1:,ii])
+        ensavg[ii]=aaens[iseason,naa,ii]
         ax1.plot(indexyr,abs(ensavg),lw=linew,color=line.get_color() ,alpha=alphal)
         stddv[ii]=np.nanstd(aa[iseason,naa,n1:,ii]);
     elif iaa==6:
         ii = np.isnan(ensavg)
-        ensavg[ii]=np.nanmean(aa[iseason,naa+1,n1:,ii])
+        ensavg[ii]=aaens[iseason,naa+1,ii]
         ax1.plot(indexyr,abs(ensavg),lw=linew,color=line.get_color() ,alpha=alphal)
         stddv[ii]=np.nanstd(aa[iseason,naa+1,n1:,ii]);
     if iaa>0:ax1.set_ylim([ymin[iaa],ymax[iaa]])        
@@ -172,6 +193,7 @@ for iaa in range(naa):
     ax1.tick_params(axis='both', which='major',length=10, labelsize=fntsz);
     ax1.xaxis.set_minor_locator(AutoMinorLocator());ax1.yaxis.set_minor_locator(AutoMinorLocator())        
     ax1.tick_params(axis='both', which='minor',length=5);
+    ax1.grid()
     if iaa==0:
         ax1.legend(frameon=False,labelcolor='linecolor', fontsize=fntsz,handlelength=0)
     if iaa==0:
