@@ -118,19 +118,18 @@ for ikernel in range(nkernel):
         if model[0:4]=='CESM':pts = ax1.errorbar([0], [0], xerr=[0],yerr=[0],marker=markers[iAA], c='k',mfc='none',ms=msz,label=lbl)
         else:pts = ax1.scatter([0], [0],marker=markers[iAA], edgecolors='k', facecolors='none',s=msz*10,label=lbl)
         handles_markers.append(pts);markers_labels.append(lbl);pts.remove()
-        marker, caps, bars = ax1.errorbar(respavg[iAA,1]-respglbavg[iAA],respavg[iAA,0]-respglbavg[iAA],yerr=respstd[iAA,0],xerr=respstd[iAA,1],color=linep.get_color(),fmt=markers[iAA], mfc='none',ms=msz, capsize=cpsz,markeredgewidth=mkedgwd)
+        marker, caps, bars = ax1.errorbar(respavg[iAA,1]-respglbavg[iAA],respavg[iAA,0]-respglbavg[iAA],yerr=respstd[iAA,0],xerr=respstd[iAA,1],color='C%d'%(colors[0]),fmt=markers[iAA], mfc='none',ms=msz, capsize=cpsz,markeredgewidth=mkedgwd)
         [bar.set_alpha(alpha) for bar in bars];[cap.set_alpha(alpha) for cap in caps]
-        marker, caps, bars =ax1.errorbar(reslavg[iAA,1],reslavg[iAA,0],xerr=reslstd[iAA,1],yerr=reslstd[iAA,0],color=linel.get_color(),fmt=markers[iAA], mfc='none',ms=msz, capsize=cpsz,markeredgewidth=mkedgwd)
+        marker, caps, bars =ax1.errorbar(reslavg[iAA,1],reslavg[iAA,0],xerr=reslstd[iAA,1],yerr=reslstd[iAA,0],color='C%d'%(colors[1]),fmt=markers[iAA], mfc='none',ms=msz, capsize=cpsz,markeredgewidth=mkedgwd)
         [bar.set_alpha(alpha) for bar in bars];[cap.set_alpha(alpha) for cap in caps]
-        marker, caps, bars =ax1.errorbar(resqavg[iAA,1],resqavg[iAA,0],xerr=resqstd[iAA,1],yerr=resqstd[iAA,0],color=lineq.get_color(),fmt=markers[iAA], mfc='none',ms=msz, capsize=cpsz,markeredgewidth=mkedgwd)
+        marker, caps, bars =ax1.errorbar(resqavg[iAA,1],resqavg[iAA,0],xerr=resqstd[iAA,1],yerr=resqstd[iAA,0],color='C%d'%(colors[3]),fmt=markers[iAA], mfc='none',ms=msz, capsize=cpsz,markeredgewidth=mkedgwd)
         [bar.set_alpha(alpha) for bar in bars];[cap.set_alpha(alpha) for cap in caps]
-        marker, caps, bars =ax1.errorbar(rescavg[iAA,1],rescavg[iAA,0],xerr=rescstd[iAA,1],yerr=rescstd[iAA,0],color=linec.get_color(),fmt=markers[iAA], mfc='none',ms=msz, capsize=cpsz,markeredgewidth=mkedgwd)
+        marker, caps, bars =ax1.errorbar(rescavg[iAA,1],rescavg[iAA,0],xerr=rescstd[iAA,1],yerr=rescstd[iAA,0],color='C%d'%(colors[4]),fmt=markers[iAA], mfc='none',ms=msz, capsize=cpsz,markeredgewidth=mkedgwd)
         [bar.set_alpha(alpha) for bar in bars];[cap.set_alpha(alpha) for cap in caps]
-        if kernel[:-6]!='CloudSat':
-            marker, caps, bars =ax1.errorbar(resaavg[iAA,1],resaavg[iAA,0],xerr=resastd[iAA,1],yerr=resastd[iAA,0],color=linea.get_color(),fmt=markers[iAA], mfc='none',ms=msz, capsize=cpsz,markeredgewidth=mkedgwd)
-            [bar.set_alpha(alpha) for bar in bars];[cap.set_alpha(alpha) for cap in caps]
-            marker, caps, bars =ax1.errorbar(resravg[iAA,1],resravg[iAA,0],xerr=resrstd[iAA,1],yerr=resrstd[iAA,0],color=liner.get_color(),fmt=markers[iAA], mfc='none',ms=msz, capsize=cpsz,markeredgewidth=mkedgwd)
-            [bar.set_alpha(alpha) for bar in bars];[cap.set_alpha(alpha) for cap in caps]
+        marker, caps, bars =ax1.errorbar(resaavg[iAA,1],resaavg[iAA,0],xerr=resastd[iAA,1],yerr=resastd[iAA,0],color='C%d'%(colors[2]),fmt=markers[iAA], mfc='none',ms=msz, capsize=cpsz,markeredgewidth=mkedgwd)
+        [bar.set_alpha(alpha) for bar in bars];[cap.set_alpha(alpha) for cap in caps]
+        marker, caps, bars =ax1.errorbar(resravg[iAA,1],resravg[iAA,0],xerr=resrstd[iAA,1],yerr=resrstd[iAA,0],color='C%d'%(colors[5]),fmt=markers[iAA], mfc='none',ms=msz, capsize=cpsz,markeredgewidth=mkedgwd)
+        [bar.set_alpha(alpha) for bar in bars];[cap.set_alpha(alpha) for cap in caps]
     ax1.set_xlim([-2,3]);ax1.set_ylim([-2,3])
     minimum = np.min((ax1.get_xlim(),ax1.get_ylim()));maximum = np.max((ax1.get_xlim(),ax1.get_ylim()));ax1.axline([minimum, minimum], [maximum, maximum], color = 'k', linestyle = '--',lw=linew/3)
     ax1.axhline(y = 0, color = 'k', linestyle = '--',lw=linew/3);ax1.axvline(x = 0, color = 'k', linestyle = '--',lw=linew/3)
