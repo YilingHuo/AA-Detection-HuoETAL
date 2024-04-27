@@ -18,7 +18,6 @@ from functions import (areaavg_lat,seasonget,smOLSconfidencelev,statslinregresst
 calcsatspechum,rolling_mean_along_axis,seasonal_rolling_mean_along_axis)
 
 
-kernel='' ###'' for using the CAM5 kernel
 stryr=1980;endyr=2022 ###use -1 if you want the whole dataset
 latmin=70;glblatlim=-91
 if latmin<-90:
@@ -67,6 +66,7 @@ ta = dataanomaly(ta0)
 ntim=len(tas);nyear=int(ntim/12);nlev=len(ta[0]);nlat=len(lat);nlon=len(lon)
 KLVL='TOA' ###TOA or SFC kernel
 ###CAM5 Kernel
+kernel='' ###'' for using the CAM5 kernel
 kernelfolder='/global/cfs/cdirs/m1199/huoyilin/cscratch/CAM5RadiativeKernels/'
 if KLVL=='SFC':varend='S'
 else:varend='T'
@@ -79,11 +79,12 @@ ds=nc.Dataset(kernelfolder+'t.kernel.plev.nc')
 ta_kernel=ds['FLN'+varend][:]#[:,:-toplevunused]
 ###CAM5 Kernel
 ###ERA5, ERAIKernel
+# kernel='ERA5kernel' ###ERAIKernel
 # kernelfolder='/pscratch/sd/h/huoyilin/ERA5_kernels/'
 # ds=nc.Dataset(kernelfolder+'thickness_normalized_ta_wv_kernel/dp_era5.nc')
 # pdiff=ds['dp'][:]/100
 ###ERA5, ERAIKernel
-###CloudSatKernel
+# kernel='CloudSatKernel'
 # kernelfolder='/pscratch/sd/h/huoyilin/CloudSat_kernels/'+KLVL+'/CloudSat/'
 # ds=nc.Dataset(kernelfolder+KLVL+'_CloudSat_Kerns.nc')
 # ts_kernel=-ds['lw_ts'][:]
