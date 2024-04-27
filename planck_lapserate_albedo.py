@@ -89,7 +89,7 @@ ta_kernel=ds['FLN'+varend][:]#[:,:-toplevunused]
 # ds=nc.Dataset(kernelfolder+KLVL+'_CloudSat_Kerns.nc')
 # ts_kernel=-ds['lw_ts'][:]
 # ta_kernel=-ds['lw_t'][:]
-# alb_kernel=ds['sw_a'][:]
+# alb_kernel=ds['sw_a'][:].data;alb_kernel[alb_kernel>9e36]=np.nan
 # q_LW_kernel=-ds['lw_q'][:]
 # q_SW_kernel=ds['sw_q'][:]
 # tmp=ds['plev'][:]/100
