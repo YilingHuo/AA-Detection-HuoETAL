@@ -190,7 +190,7 @@ for imonth in range(12):
     t1[imonth]=np.nanmean(ta0[imonth::12],axis=0)
 qs1 = calcsatspechum(t1,p);qs1[qs1<0]=np.nan
 rh = q1/qs1;rh[rh<0]=np.nan
-qs2 = calcsatspechum(ta0,p);qs1[qs1<0]=np.nan
+qs2 = calcsatspechum(ta0,p);qs2[qs2<0]=np.nan
 dLW_q=tas*0;dSW_q=tas*0;dLW_q_cs=tas*0;dSW_q_cs=tas*0
 for iyear in range(nyear):
     month1=iyear*12;month2=iyear*12+12
