@@ -123,7 +123,8 @@ ta_kernel=ds['FLN'+varend][:]#[:,:-toplevunused]
 # alb=dataanomaly(readinvariable(variable1,stryr,endyr,filestryr=filestryr,iens=iens)/readinvariable(variable2,stryr,endyr,filestryr=filestryr,iens=iens))*100 ###CESM
 # totaltoa=dataanomaly(readinvariable('rsdt',stryr,endyr,filestryr=filestryr,iens=iens)-readinvariable('rsut',stryr,endyr,filestryr=filestryr,iens=iens)-readinvariable('rlut',stryr,endyr,filestryr=filestryr,iens=iens))
 ds=nc.Dataset(fn);variable1=ds['msdwswrf'][12*(stryr-filestryr):12*(endyr-filestryr+1)]### ERA5
-alb=dataanomaly((variable1-ds['msnswrf'][12*(stryr-filestryr):12*(endyr-filestryr+1)])/variable1)*100; del variable1 ### ERA5
+alb=(variable1-ds['msnswrf'][12*(stryr-filestryr):12*(endyr-filestryr+1)])/variable1; del variable1 
+alb[alb<0]=np.nan;alb[alb>1]=np.nan;alb=dataanomaly(alb)*100###ERA5
 if KLVL=='SFC':totaltoa=dataanomaly((ds['msnlwrf'][:]+ds['msnswrf'][:])[12*(stryr-filestryr):12*(endyr-filestryr+1)])
 else:totaltoa=dataanomaly((ds['mtnlwrf'][:]+ds['mtnswrf'][:])[12*(stryr-filestryr):12*(endyr-filestryr+1)])
 # Read TOA albedo kernel
