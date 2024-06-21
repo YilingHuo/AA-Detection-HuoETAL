@@ -190,6 +190,8 @@ dLW_q=tas*0;dSW_q=tas*0
 for iyear in range(nyear):
     month1=iyear*12;month2=iyear*12+12
     dqdt = (qs2[month1:month2] - qs1)/ta[month1:month2]*rh
+    ###dlogqdt;dlogq;Uses the fractional change approximation of logarithms in the specific humidity response & normalization factor
+    dqdt=dqdt/q1; dq[month1:month2]=dq[month1:month2]/q1 
     # Normalize kernels by the change in moisture for 1 K warming at constant RH; Convolve moisture kernel with change in moisture
     dLW_q[month1:month2]=np.nansum(q_LW_kernel/dqdt*dq[month1:month2]*pdiff,axis=1)
     dSW_q[month1:month2]=np.nansum(q_SW_kernel/dqdt*dq[month1:month2]*pdiff,axis=1)   
