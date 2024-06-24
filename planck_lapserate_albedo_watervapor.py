@@ -148,7 +148,7 @@ if verticalflip:    hus = np.flip(hus,axis=1)
 q1=np.zeros([12,nlev,nlat,nlon])
 for imonth in range(12):
     q1[imonth]=np.nanmean(hus[imonth::12],axis=0)
-rh = q1/qs1;del q1
+rh = q1/qs1
 # the change in moisture
 dq=dataanomaly(hus);del hus
 # Read kernels
@@ -195,7 +195,7 @@ for iyear in range(nyear):
     # Normalize kernels by the change in moisture for 1 K warming at constant RH; Convolve moisture kernel with change in moisture
     dLW_q[month1:month2]=np.nansum(q_LW_kernel/dqdt*dq[month1:month2]*pdiff,axis=1)
     dSW_q[month1:month2]=np.nansum(q_SW_kernel/dqdt*dq[month1:month2]*pdiff,axis=1)   
-del qs1,qs2,dqdt
+del qs1,qs2,dqdt,q1
 
 
 
