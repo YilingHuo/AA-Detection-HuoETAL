@@ -4,7 +4,7 @@ Code for creating figures in Huo et al. (2024)
 ## Citation
 If you use this code or adapt it in your work, please cite the following paper:
 
-Huo, Y., Wang, H., Lu, J., Fu, Q., Jonko, A.K., Lee, Y.J., Ma, W., Maslowski, W. & Qin, Y., 2024. Assessing Radiative Feedbacks and Their Contribution to the Arctic Amplification Measured by Various Metrics. #Journal of Geophysical Research: Atmosphere#, 129, e2024JD040880. https://doi.org/10.1029/e2024JD040880
+Huo, Y., Wang, H., Lu, J., Fu, Q., Jonko, A.K., Lee, Y.J., Ma, W., Maslowski, W. & Qin, Y., 2024. Assessing Radiative Feedbacks and Their Contribution to the Arctic Amplification Measured by Various Metrics. *Journal of Geophysical Research: Atmosphere*, 129, e2024JD040880. https://doi.org/10.1029/e2024JD040880
 ---- 
 ## Quick Start
 To create Figs.1-3 in Huo et al. (2024) run Fig1.py, Fig2.py and Fig3.py respectively.
