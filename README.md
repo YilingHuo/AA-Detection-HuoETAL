@@ -14,7 +14,7 @@ For Figs. 4-7, you'll need NCL, NCO and Python.
 `ncl tools/t_kernel_to_plev.ncl`  
 `ncl tools/q_kernel_to_plev.ncl`
 3. use ncremap to regrid data files to the same as kernel files. 
-4. run planck_lapserate_albedo.py and cloud_feedback.py first to create the text files of zonal mean radiative feedbacks.
+4. run planck_lapserate_albedo_watervapor.py and cloud_feedback.py first to create the text files of zonal mean radiative feedbacks.
 5. Run Fig4.py, Fig5.py, Fig6.py and Fig7.py respectively to create Figs.4-7 in Huo et al. (2024).
 -----
 Questions/comments? Post in the issues tab, or email me at yiling.huo at pnnl dot com
