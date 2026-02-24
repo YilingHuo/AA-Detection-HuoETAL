@@ -127,6 +127,10 @@ alb=(variable1-ds['msnswrf'][12*(stryr-filestryr):12*(endyr-filestryr+1)])/varia
 alb[alb<0]=np.nan;alb[alb>1]=np.nan;alb=dataanomaly(alb)*100###ERA5
 if KLVL=='SFC':totaltoa=dataanomaly((ds['msnlwrf'][:]+ds['msnswrf'][:])[12*(stryr-filestryr):12*(endyr-filestryr+1)])
 else:totaltoa=dataanomaly((ds['mtnlwrf'][:]+ds['mtnswrf'][:])[12*(stryr-filestryr):12*(endyr-filestryr+1)])
+ds1=nc.Dataset('/pscratch/sd/h/huoyilin/e5.sfc.d2m_mslhf_msnlwrf_msnlwrfcs_msnswrf_msnswrfcs_msshf_mtnlwrf_mtnlwrfcs_mtnswrf_mtnswrfcs_sp_p62_70_72_74_76.162.19402022.192x288.nc')
+ohu=dataanomaly((-ds1['mslhf'][:]-ds1['msshf'][:])[12*(stryr-filestryr):12*(endyr-filestryr+1)])
+ds2=nc.Dataset('/pscratch/sd/h/huoyilin/e5.pl.MSEVDP.19512022.192x288.nc')
+aht=dataanomaly((-ds1['mtnswrf'][:]+ds1['msnswrf'][:]-ds1['mtnlwrf'][:]+ds1['msnlwrf'][:])[12*(stryr-filestryr):12*(endyr-filestryr+1)])-ohu#-333550*(ds2['mtpr'][12*(stryr-filestryr):12*(endyr-filestryr+1)]))
 # Read TOA albedo kernel
 ds=nc.Dataset(kernelfolder+'alb.kernel.nc')###CAM5Kernel
 alb_kernel=ds['FSN'+varend][:]###CAM5Kernel
@@ -295,6 +299,8 @@ dLW_planck_smean=seasonal_rolling_mean_along_axis(-dLW_planck-tas,m1,m2,ax=0)
 dLW_lapserate_smean=seasonal_rolling_mean_along_axis(-dLW_lapserate,m1,m2,ax=0)
 dSW_alb_smean=seasonal_rolling_mean_along_axis(dSW_alb,m1,m2,ax=0)
 dLWSW_smean=seasonal_rolling_mean_along_axis(dLWSW,m1,m2,ax=0)
+dAHT_smean=seasonal_rolling_mean_along_axis(aht,m1,m2,ax=0)
+dOHU_smean=seasonal_rolling_mean_along_axis(ohu,m1,m2,ax=0)
 
 ### Water vapor feedback
 ## Add the LW and SW responses. Note the sign convention difference between LW and SW!
@@ -319,6 +325,7 @@ else:
 clev=0.05#confidence level
 res_planck=np.zeros([3,nlat]);res_lapserate=np.zeros([3,nlat]);res_alb=np.zeros([3,nlat]);res_ttl=np.zeros([3,nlat])
 res_qlw=np.zeros([3,nlat]);res_qsw=np.zeros([3,nlat]);res_q=np.zeros([3,nlat])
+res_aht=np.zeros([3,nlat]);res_ohu=np.zeros([3,nlat]);
 # if iAA<1:#AvgTas
 #     tmp=tas_areamean_smean  ##AvgTas
 #     # tmp=tas_glbmean_smean  ##AvgGlbTas
@@ -340,6 +347,8 @@ for ilat in range(nlat):
         res_qsw[:,ilat]=statslinregressts_slopepvalue(tmp,nandetrend(np.nanmean(dSW_q_smean[:nmonth,ilat,:],axis=-1)))
         res_q[:,ilat]=statslinregressts_slopepvalue(tmp,nandetrend(np.nanmean(dR_q_smean[:nmonth,ilat,:],axis=-1)))
         res_ttl[:,ilat]=statslinregressts_slopepvalue(tmp,nandetrend(np.nanmean(dLWSW_smean[:nmonth,ilat,:],axis=-1)))
+        res_aht[:,ilat]=statslinregressts_slopepvalue_nandetrend(tmp,np.nanmean(dAHT_smean[:nmonth,ilat,:],axis=-1))
+        res_ohu[:,ilat]=statslinregressts_slopepvalue_nandetrend(tmp,np.nanmean(dOHU_smean[:nmonth,ilat,:],axis=-1))
     else:    
         res_planck[:,ilat]=statslinregressts_slopepvalue(tmp,np.nanmean(dLW_planck_smean[:nmonth,ilat,:],axis=-1))
         res_lapserate[:,ilat]=statslinregressts_slopepvalue(tmp,np.nanmean(dLW_lapserate_smean[:nmonth,ilat,:],axis=-1))
@@ -348,6 +357,8 @@ for ilat in range(nlat):
         res_qsw[:,ilat]=statslinregressts_slopepvalue(tmp,np.nanmean(dSW_q_smean[:nmonth,ilat,:],axis=-1))
         res_q[:,ilat]=statslinregressts_slopepvalue(tmp,np.nanmean(dR_q_smean[:nmonth,ilat,:],axis=-1))
         res_ttl[:,ilat]=statslinregressts_slopepvalue(tmp,np.nanmean(dLWSW_smean[:nmonth,ilat,:],axis=-1))
+        res_aht[:,ilat]=statslinregressts_slopepvalue(tmp,np.nanmean(dAHT_smean[:nmonth,ilat,:],axis=-1))
+        res_ohu[:,ilat]=statslinregressts_slopepvalue(tmp,np.nanmean(dOHU_smean[:nmonth,ilat,:],axis=-1))
 del tmp
 if iAA<1:###iAA=0 means feedback on temperature
     np.savetxt('FeedbackWaterVaporZonalMean'+season+AvgTas+area+str(stryr)+str(endyr)+model+Detrendtxt+KLVL+kernel+'.out', (res_qsw[0],res_qlw[0],res_q[0]))
@@ -356,6 +367,9 @@ if iAA<1:###iAA=0 means feedback on temperature
     np.savetxt('PlanckLapseAlbTotalZonalMeanPvalue'+season+AvgTas+area+str(stryr)+str(endyr)+model+Detrendtxt+KLVL+kernel+'.out', (res_planck[1],res_lapserate[1],res_alb[1],res_ttl[1]))
     np.savetxt('FeedbackWaterVaporZonalMeanRsquared'+season+AvgTas+area+str(stryr)+str(endyr)+model+Detrendtxt+KLVL+kernel+'.out', (res_qsw[2],res_qlw[2],res_q[2]))
     np.savetxt('PlanckLapseAlbTotalZonalMeanRsquared'+season+AvgTas+area+str(stryr)+str(endyr)+model+Detrendtxt+KLVL+kernel+'.out', (res_planck[2],res_lapserate[2],res_alb[2],res_ttl[2]))
+    np.savetxt('FeedbackAHTOHUZonalMean'+season+AvgTas+area+str(stryr)+str(endyr)+model+Detrendtxt+KLVL+kernel+'.out', (res_aht[0],res_ohu[0]))
+    np.savetxt('FeedbackAHTOHUZonalMeanPvalue'+season+AvgTas+area+str(stryr)+str(endyr)+model+Detrendtxt+KLVL+kernel+'.out', (res_aht[1],res_ohu[1]))
+    np.savetxt('FeedbackAHTOHUZonalMeanRsquared'+season+AvgTas+area+str(stryr)+str(endyr)+model+Detrendtxt+KLVL+kernel+'.out', (res_aht[2],res_ohu[2]))
 elif iAA<2:
     np.savetxt('FeedbackWaterVaporZonalMean'+season+AvgTas+area+'AA'+str(iAA)+str(stryr)+str(endyr)+model+Detrendtxt+KLVL+kernel+'.out', (res_qsw[0],res_qlw[0],res_q[0]))
     np.savetxt('PlanckLapseAlbTotalZonalMean'+season+AvgTas+area+'AA'+str(iAA)+str(stryr)+str(endyr)+model+Detrendtxt+KLVL+kernel+'.out', (res_planck[0],res_lapserate[0],res_alb[0],res_ttl[0]))
@@ -363,6 +377,9 @@ elif iAA<2:
     np.savetxt('PlanckLapseAlbTotalZonalMeanPvalue'+season+AvgTas+area+'AA'+str(iAA)+str(stryr)+str(endyr)+model+Detrendtxt+KLVL+kernel+'.out', (res_planck[1],res_lapserate[1],res_alb[1],res_ttl[1]))
     np.savetxt('FeedbackWaterVaporZonalMeanRsquared'+season+AvgTas+area+'AA'+str(iAA)+str(stryr)+str(endyr)+model+Detrendtxt+KLVL+kernel+'.out', (res_qsw[2],res_qlw[2],res_q[2]))
     np.savetxt('PlanckLapseAlbTotalZonalMeanRsquared'+season+AvgTas+area+'AA'+str(iAA)+str(stryr)+str(endyr)+model+Detrendtxt+KLVL+kernel+'.out', (res_planck[2],res_lapserate[2],res_alb[2],res_ttl[2]))
+    np.savetxt('FeedbackAHTOHUZonalMean'+season+AvgTas+area+'AA'+str(iAA)+str(stryr)+str(endyr)+model+Detrendtxt+KLVL+kernel+'.out', (res_aht[0],res_ohu[0]))
+    np.savetxt('FeedbackAHTOHUZonalMeanPvalue'+season+AvgTas+area+'AA'+str(iAA)+str(stryr)+str(endyr)+model+Detrendtxt+KLVL+kernel+'.out', (res_aht[1],res_ohu[1]))
+    np.savetxt('FeedbackAHTOHUZonalMeanRsquared'+season+AvgTas+area+'AA'+str(iAA)+str(stryr)+str(endyr)+model+Detrendtxt+KLVL+kernel+'.out', (res_aht[2],res_ohu[2]))
 elif iAA<5:
     np.savetxt('FeedbackWaterVaporZonalMean'+season+AvgTas+area+'AA'+str(iAA)+str(stryr)+str(endyraa)+'window'+str(window_size)+'yr'+model+Detrendtxt+KLVL+kernel+'.out', (res_qsw[0],res_qlw[0],res_q[0]))
     np.savetxt('PlanckLapseAlbTotalZonalMean'+season+AvgTas+area+'AA'+str(iAA)+str(stryr)+str(endyraa)+'window'+str(window_size)+'yr'+model+Detrendtxt+KLVL+kernel+'.out', (res_planck[0],res_lapserate[0],res_alb[0],res_ttl[0]))
@@ -370,6 +387,9 @@ elif iAA<5:
     np.savetxt('PlanckLapseAlbTotalZonalMeanPvalue'+season+AvgTas+area+'AA'+str(iAA)+str(stryr)+str(endyraa)+'window'+str(window_size)+'yr'+model+Detrendtxt+KLVL+kernel+'.out', (res_planck[1],res_lapserate[1],res_alb[1],res_ttl[1]))
     np.savetxt('FeedbackWaterVaporZonalMeanRsquared'+season+AvgTas+area+'AA'+str(iAA)+str(stryr)+str(endyraa)+'window'+str(window_size)+'yr'+model+Detrendtxt+KLVL+kernel+'.out', (res_qsw[2],res_qlw[2],res_q[2]))
     np.savetxt('PlanckLapseAlbTotalZonalMeanRsquared'+season+AvgTas+area+'AA'+str(iAA)+str(stryr)+str(endyraa)+'window'+str(window_size)+'yr'+model+Detrendtxt+KLVL+kernel+'.out', (res_planck[2],res_lapserate[2],res_alb[2],res_ttl[2]))
+    np.savetxt('FeedbackAHTOHUZonalMean'+season+AvgTas+area+'AA'+str(iAA)+str(stryr)+str(endyraa)+'window'+str(window_size)+'yr'+model+Detrendtxt+KLVL+kernel+'.out', (res_aht[0],res_ohu[0]))
+    np.savetxt('FeedbackAHTOHUZonalMeanPvalue'+season+AvgTas+area+'AA'+str(iAA)+str(stryr)+str(endyraa)+'window'+str(window_size)+'yr'+model+Detrendtxt+KLVL+kernel+'.out', (res_aht[1],res_ohu[1]))
+    np.savetxt('FeedbackAHTOHUZonalMeanRsquared'+season+AvgTas+area+'AA'+str(iAA)+str(stryr)+str(endyraa)+'window'+str(window_size)+'yr'+model+Detrendtxt+KLVL+kernel+'.out', (res_aht[2],res_ohu[2]))
 else:
     np.savetxt('FeedbackWaterVaporZonalMean'+season+AvgTas+area+'AA'+str(iAA)+str(stryr)+str(endyr)+'ref'+str(refyr1)+str(refyr2)+model+Detrendtxt+KLVL+kernel+'.out', (res_qsw[0],res_qlw[0],res_q[0]))
     np.savetxt('PlanckLapseAlbTotalZonalMean'+season+AvgTas+area+'AA'+str(iAA)+str(stryr)+str(endyr)+'ref'+str(refyr1)+str(refyr2)+model+Detrendtxt+KLVL+kernel+'.out', (res_planck[0],res_lapserate[0],res_alb[0],res_ttl[0]))    
@@ -377,3 +397,6 @@ else:
     np.savetxt('PlanckLapseAlbTotalZonalMeanPvalue'+season+AvgTas+area+'AA'+str(iAA)+str(stryr)+str(endyr)+'ref'+str(refyr1)+str(refyr2)+model+Detrendtxt+KLVL+kernel+'.out', (res_planck[1],res_lapserate[1],res_alb[1],res_ttl[1]))
     np.savetxt('FeedbackWaterVaporZonalMeanRsquared'+season+AvgTas+area+'AA'+str(iAA)+str(stryr)+str(endyr)+'ref'+str(refyr1)+str(refyr2)+model+Detrendtxt+KLVL+kernel+'.out', (res_qsw[2],res_qlw[2],res_q[2]))
     np.savetxt('PlanckLapseAlbTotalZonalMeanRsquared'+season+AvgTas+area+'AA'+str(iAA)+str(stryr)+str(endyr)+'ref'+str(refyr1)+str(refyr2)+model+Detrendtxt+KLVL+kernel+'.out', (res_planck[2],res_lapserate[2],res_alb[2],res_ttl[2]))
+    np.savetxt('FeedbackAHTOHUZonalMean'+season+AvgTas+area+'AA'+str(iAA)+str(stryr)+str(endyr)+'ref'+str(refyr1)+str(refyr2)+model+Detrendtxt+KLVL+kernel+'.out', (res_aht[0],res_ohu[0]))
+    np.savetxt('FeedbackAHTOHUZonalMeanPvalue'+season+AvgTas+area+'AA'+str(iAA)+str(stryr)+str(endyr)+'ref'+str(refyr1)+str(refyr2)+model+Detrendtxt+KLVL+kernel+'.out', (res_aht[1],res_ohu[1]))
+    np.savetxt('FeedbackAHTOHUZonalMeanRsquared'+season+AvgTas+area+'AA'+str(iAA)+str(stryr)+str(endyr)+'ref'+str(refyr1)+str(refyr2)+model+Detrendtxt+KLVL+kernel+'.out', (res_aht[2],res_ohu[2]))
