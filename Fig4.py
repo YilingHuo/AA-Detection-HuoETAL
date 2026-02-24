@@ -46,9 +46,11 @@ fntsz=15;linew=3;alpha=.15;mkedgwd=3;colors=[1,2,3,4,0,5]
 nAA=5;ncol=3;fig, axes = plt.subplots(nrows=2, ncols=ncol,figsize=(16, 11), facecolor='w')
 respavg=np.zeros([5,2])+np.nan;reslavg=np.zeros([5,2])+np.nan;resaavg=np.zeros([5,2])+np.nan;resqavg=np.zeros([5,2])+np.nan;rescavg=np.zeros([5,2])+np.nan;respglbavg=np.zeros([5])+np.nan;resravg=np.zeros([5,2])+np.nan;resclavg=np.zeros([5,2])+np.nan;rescsavg=np.zeros([5,2])+np.nan
 respstd=np.zeros([5,2])+np.nan;reslstd=np.zeros([5,2])+np.nan;resastd=np.zeros([5,2])+np.nan;resqstd=np.zeros([5,2])+np.nan;rescstd=np.zeros([5,2])+np.nan;resrstd=np.zeros([5,2])+np.nan;resclstd=np.zeros([5,2])+np.nan;rescsstd=np.zeros([5,2])+np.nan
+resahtavg=np.zeros([5,2])+np.nan;resahtstd=np.zeros([5,2])+np.nan;resoavg=np.zeros([5,2])+np.nan;resostd=np.zeros([5,2])+np.nan
 for iAA in range(nAA):
     res_planck=np.zeros([2,nlat]);res_lapserate=np.zeros([2,nlat]);res_alb=np.zeros([2,nlat]);res_ttl=np.zeros([2,nlat])
     res_qlw=np.zeros([2,nlat]);res_qsw=np.zeros([2,nlat]);res_q=np.zeros([2,nlat])
+    res_aht=np.zeros([2,nlat]);res_ohu=np.zeros([2,nlat])
 
     if iAA<1:###iAA=0 means feedback on temperature
         res_planck,res_lapserate,res_alb,res_ttl=np.loadtxt('PlanckLapseAlbTotalZonalMean'+Rsquared+season+AvgTas+str(stryr)+str(endyr)+model+Detrendtxt+KLVL+kernel+'.out')
@@ -57,6 +59,8 @@ for iAA in range(nAA):
         resp_planck,resp_lapserate,resp_alb,resp_ttl=np.loadtxt('PlanckLapseAlbTotalZonalMeanPvalue'+season+AvgTas+str(stryr)+str(endyr)+model+Detrendtxt+KLVL+kernel+'.out')
         resp_qsw,resp_qlw,resp_q=np.loadtxt('FeedbackWaterVaporZonalMeanPvalue'+season+AvgTas+str(stryr)+str(endyr)+model+Detrendtxt+KLVL+kernel+'.out')
         resp_cloudsw,resp_cloudlw,resp_cloud=np.loadtxt('FeedbackCloudZonalMeanPvalue'+season+AvgTas+str(stryr)+str(endyr)+model+Detrendtxt+KLVL+kernel+'.out')
+        res_aht,res_ohu=np.loadtxt('FeedbackAHTOHUZonalMean'+season+AvgTas+str(stryr)+str(endyr)+model+Detrendtxt+KLVL+kernel+'.out')
+        resp_aht,resp_ohu=np.loadtxt('FeedbackAHTOHUZonalMeanPvalue'+season+AvgTas+str(stryr)+str(endyr)+model+Detrendtxt+KLVL+kernel+'.out')
     elif iAA<2:
         res_planck,res_lapserate,res_alb,res_ttl=np.loadtxt('PlanckLapseAlbTotalZonalMean'+Rsquared+season+AvgTas+'AA'+str(iAA)+str(stryr)+str(endyr)+model+Detrendtxt+KLVL+kernel+'.out')
         res_qsw,res_qlw,res_q=np.loadtxt('FeedbackWaterVaporZonalMean'+Rsquared+season+AvgTas+'AA'+str(iAA)+str(stryr)+str(endyr)+model+Detrendtxt+KLVL+kernel+'.out')
@@ -64,6 +68,8 @@ for iAA in range(nAA):
         resp_planck,resp_lapserate,resp_alb,resp_ttl=np.loadtxt('PlanckLapseAlbTotalZonalMeanPvalue'+season+AvgTas+'AA'+str(iAA)+str(stryr)+str(endyr)+model+Detrendtxt+KLVL+kernel+'.out')
         resp_qsw,resp_qlw,resp_q=np.loadtxt('FeedbackWaterVaporZonalMeanPvalue'+season+AvgTas+'AA'+str(iAA)+str(stryr)+str(endyr)+model+Detrendtxt+KLVL+kernel+'.out')
         resp_cloudsw,resp_cloudlw,resp_cloud=np.loadtxt('FeedbackCloudZonalMeanPvalue'+season+AvgTas+'AA'+str(iAA)+str(stryr)+str(endyr)+model+Detrendtxt+KLVL+kernel+'.out')
+        res_aht,res_ohu=np.loadtxt('FeedbackAHTOHUZonalMean'+season+AvgTas+str(stryr)+str(endyr)+model+Detrendtxt+KLVL1+kernel+'.out')
+        resp_aht,resp_ohu=np.loadtxt('FeedbackAHTOHUZonalMeanPvalue'+season+AvgTas+str(stryr)+str(endyr)+model+Detrendtxt+KLVL1+kernel+'.out')
     elif iAA<5:
             res_planck,res_lapserate,res_alb,res_ttl=np.loadtxt('PlanckLapseAlbTotalZonalMean'+Rsquared+season+AvgTas+'AA'+str(iAA)+str(stryr)+str(endyraa)+'window'+str(window_size)+'yr'+model+Detrendtxt+KLVL+kernel+'.out')
             res_qsw,res_qlw,res_q=np.loadtxt('FeedbackWaterVaporZonalMean'+Rsquared+season+AvgTas+'AA'+str(iAA)+str(stryr)+str(endyraa)+'window'+str(window_size)+'yr'+model+Detrendtxt+KLVL+kernel+'.out')
@@ -71,6 +77,8 @@ for iAA in range(nAA):
             resp_planck,resp_lapserate,resp_alb,resp_ttl=np.loadtxt('PlanckLapseAlbTotalZonalMeanPvalue'+season+AvgTas+'AA'+str(iAA)+str(stryr)+str(endyraa)+'window'+str(window_size)+'yr'+model+Detrendtxt+KLVL+kernel+'.out')
             resp_qsw,resp_qlw,resp_q=np.loadtxt('FeedbackWaterVaporZonalMeanPvalue'+season+AvgTas+'AA'+str(iAA)+str(stryr)+str(endyraa)+'window'+str(window_size)+'yr'+model+Detrendtxt+KLVL+kernel+'.out')
             resp_cloudsw,resp_cloudlw,resp_cloud=np.loadtxt('FeedbackCloudZonalMeanPvalue'+season+AvgTas+'AA'+str(iAA)+str(stryr)+str(endyraa)+'window'+str(window_size)+'yr'+model+Detrendtxt+KLVL+kernel+'.out')
+            res_aht,res_ohu=np.loadtxt('FeedbackAHTOHUZonalMean'+season+AvgTas+'AA'+str(iAA)+str(stryr)+str(endyraa)+'window'+str(window_size)+'yr'+model+Detrendtxt+KLVLaht+kernelaht+'.out')
+            resp_aht,resp_ohu=np.loadtxt('FeedbackAHTOHUZonalMeanPvalue'+season+AvgTas+'AA'+str(iAA)+str(stryr)+str(endyraa)+'window'+str(window_size)+'yr'+model+Detrendtxt+KLVLaht+kernelaht+'.out')
     else:
         res_planck,res_lapserate,res_alb,res_ttl=np.loadtxt('PlanckLapseAlbTotalZonalMean'+Rsquared+season+AvgTas+'AA'+str(iAA)+str(stryr)+str(endyr)+'ref'+str(refyr1)+str(refyr2)+model+Detrendtxt+KLVL+kernel+'.out')
         res_qsw,res_qlw,res_q=np.loadtxt('FeedbackWaterVaporZonalMean'+Rsquared+season+AvgTas+'AA'+str(iAA)+str(stryr)+str(endyr)+'ref'+str(refyr1)+str(refyr2)+model+Detrendtxt+KLVL+kernel+'.out')
@@ -78,7 +86,9 @@ for iAA in range(nAA):
         resp_planck,resp_lapserate,resp_alb,resp_ttl=np.loadtxt('PlanckLapseAlbTotalZonalMeanPvalue'+season+AvgTas+'AA'+str(iAA)+str(stryr)+str(endyr)+'ref'+str(refyr1)+str(refyr2)+model+Detrendtxt+KLVL+kernel+'.out')
         resp_qsw,resp_qlw,resp_q=np.loadtxt('FeedbackWaterVaporZonalMeanPvalue'+season+AvgTas+'AA'+str(iAA)+str(stryr)+str(endyr)+'ref'+str(refyr1)+str(refyr2)+model+Detrendtxt+KLVL+kernel+'.out')
         resp_cloudsw,resp_cloudlw,resp_cloud=np.loadtxt('FeedbackCloudZonalMeanPvalue'+season+AvgTas+'AA'+str(iAA)+str(stryr)+str(endyr)+'ref'+str(refyr1)+str(refyr2)+model+Detrendtxt+KLVL+kernel+'.out')
-    res_rsd=res_ttl-res_planck-res_lapserate-res_alb-res_q-res_cloud;resp_rsd=resp_ttl
+        res_aht,res_ohu=np.loadtxt('FeedbackAHTOHUZonalMean'+season+AvgTas+'AA'+str(iAA)+str(stryr)+str(endyr)+'ref'+str(refyr1)+str(refyr2)+model+Detrendtxt+KLVL+kernel+'.out')
+        resp_aht,resp_ohu=np.loadtxt('FeedbackAHTOHUZonalMeanPvalue'+season+AvgTas+'AA'+str(iAA)+str(stryr)+str(endyr)+'ref'+str(refyr1)+str(refyr2)+model+Detrendtxt+KLVL+kernel+'.out')
+    res_rsd=res_ttl-res_planck-res_lapserate-res_alb-res_q-res_cloud-res_aht-res_ohu;resp_rsd=resp_ttl
 
     ax1=axes.flat[iAA];
     ax1.set_title('('+letters[iAA]+')',loc='left', fontsize=fntsz)
@@ -110,6 +120,10 @@ for iAA in range(nAA):
     resclavg[iAA,1]=np.average(res_cloudlw, weights=latweights1)    
     rescsavg[iAA,0]=np.average(res_cloudsw, weights=latweights0)    
     rescsavg[iAA,1]=np.average(res_cloudsw, weights=latweights1)    
+    resahtavg[iAA,0]=np.average(res_aht, weights=latweights0)
+    resahtavg[iAA,1]=np.average(res_aht, weights=latweights1)
+    resoavg[iAA,0]=np.average(res_ohu, weights=latweights0)
+    resoavg[iAA,1]=np.average(res_ohu, weights=latweights1)
     if model[0:4]=='CESM':
         linep, =ax1.plot(lat,res_planck,lw=linew,color='C%d'%(colors[0]),label=labelp+' '+"%.2f" % (respavg[iAA,0]))#+" %.1f%%" % (100 * respavg/resavg))
         stddv=np.nanstd(res_planck_ens, axis=0);ax1.fill_between(lat,res_planck-stddv, res_planck+stddv,color=linep.get_color(),alpha=alpha)
@@ -121,6 +135,10 @@ for iAA in range(nAA):
         stddv=np.nanstd(res_q_ens, axis=0);ax1.fill_between(lat,res_q-stddv, res_q+stddv,color=lineq.get_color(),alpha=alpha)
         linec, =ax1.plot(lat,res_cloud,lw=linew,color='C%d'%(colors[4]),label='C '+"%.2f" %(rescavg[iAA,0])+" %.0f%%" % (100 * rescavg[iAA,0]/respavg[iAA,0]))#+" %.1f%%" % (100 * respavg/resavg))
         stddv=np.nanstd(res_cloud_ens, axis=0);ax1.fill_between(lat,res_cloud-stddv, res_cloud+stddv,color=linec.get_color(),alpha=alpha)
+        lineaht, =ax1.plot(lat,res_aht,lw=linew,color='C%d'%(colors[6]),label='AHT '+"%.2f" %(resahtavg[iAA,0])+" %.0f%%" % (100 * resahtavg[iAA,0]/respavg[iAA,0]))#+" %.1f%%" % (100 * respavg/resavg))
+        stddv=np.nanstd(res_aht_ens, axis=0);ax1.fill_between(lat,res_aht-stddv, res_aht+stddv,color=lineaht.get_color(),alpha=alpha)
+        lineo, =ax1.plot(lat,res_ohu,lw=linew,color='C%d'%(colors[7]),label='OHU '+"%.2f" %(resoavg[iAA,0])+" %.0f%%" % (100 * resoavg[iAA,0]/respavg[iAA,0]))#+" %.1f%%" % (100 * respavg/resavg))
+        stddv=np.nanstd(res_ohu_ens, axis=0);ax1.fill_between(lat,res_ohu-stddv, res_ohu+stddv,color=lineo.get_color(),alpha=alpha)
         liner, =ax1.plot(lat,res_rsd,lw=linew,color='C%d'%(colors[5]),label='R '+"%.2f" %(resravg[iAA,0])+" %.0f%%" % (100 * resravg[iAA,0]/respavg[iAA,0]))#+" %.1f%%" % (100 * respavg/resavg))
         stddv=np.nanstd(res_rsd_ens, axis=0);ax1.fill_between(lat,res_rsd-stddv, res_rsd+stddv,color=linec.get_color(),alpha=alpha)
     else:
@@ -139,6 +157,12 @@ for iAA in range(nAA):
         ii=(resp_cloud<clev);tmp=res_cloud+np.nan;tmp[ii]=res_cloud[ii]
         linec, =ax1.plot(lat,tmp,lw=linew,color='C%d'%(colors[4]),label='C '+"%.2f" %(rescavg[iAA,0])+" %.0f%%" % (100 * rescavg[iAA,0]/respavg[iAA,0]))
         ax1.plot(lat,res_cloud,lw=linew,color=linec.get_color(),alpha=alpha*2)
+        ii=(resp_aht<clev);tmp=res_aht+np.nan;tmp[ii]=res_aht[ii]
+        lineaht, =ax1.plot(lat,tmp,lw=linew,color='C%d'%(colors[6]),label='AHT '+"%.2f" %(resahtavg[iAA,0])+" %.0f%%" % (100 * resahtavg[iAA,0]/respavg[iAA,0]))
+        ax1.plot(lat,res_aht,lw=linew,color=lineaht.get_color(),alpha=alpha*2)
+        ii=(resp_ohu<clev);tmp=res_ohu+np.nan;tmp[ii]=res_ohu[ii]
+        lineo, =ax1.plot(lat,tmp,lw=linew,color='C%d'%(colors[7]),label='OHU '+"%.2f" %(resoavg[iAA,0])+" %.0f%%" % (100 * resoavg[iAA,0]/respavg[iAA,0]))
+        ax1.plot(lat,res_ohu,lw=linew,color=lineo.get_color(),alpha=alpha*2)
         ii=(resp_ttl<clev);tmp=res_rsd+np.nan;tmp[ii]=res_rsd[ii]
         liner, =ax1.plot(lat,tmp,lw=linew,color='C%d'%(colors[5]),label='R '+"%.2f" %(resravg[iAA,0])+" %.0f%%" % (100 * resravg[iAA,0]/respavg[iAA,0]))
         ax1.plot(lat,res_rsd,lw=linew,color=liner.get_color(),alpha=alpha*2)
@@ -184,6 +208,10 @@ for iAA in range(nAA):
     marker, caps, bars =ax1.errorbar(resqavg[iAA,1],resqavg[iAA,0],xerr=resqstd[iAA,1],yerr=resqstd[iAA,0],color=lineq.get_color(),fmt=markers[iAA], mfc='none',ms=msz, capsize=cpsz,markeredgewidth=mkedgwd)
     [bar.set_alpha(alpha) for bar in bars];[cap.set_alpha(alpha) for cap in caps]
     marker, caps, bars =ax1.errorbar(rescavg[iAA,1],rescavg[iAA,0],xerr=rescstd[iAA,1],yerr=rescstd[iAA,0],color=linec.get_color(),fmt=markers[iAA], mfc='none',ms=msz, capsize=cpsz,markeredgewidth=mkedgwd)
+    [bar.set_alpha(alpha) for bar in bars];[cap.set_alpha(alpha) for cap in caps]
+    marker, caps, bars =ax1.errorbar(resahtavg[iAA,1],resahtavg[iAA,0],xerr=resahtstd[iAA,1],yerr=resahtstd[iAA,0],color=lineaht.get_color(),fmt=markers[iAA], mfc='none',ms=msz, capsize=cpsz,markeredgewidth=mkedgwd)
+    [bar.set_alpha(alpha) for bar in bars];[cap.set_alpha(alpha) for cap in caps]
+    marker, caps, bars =ax1.errorbar(resoavg[iAA,1],resoavg[iAA,0],xerr=resostd[iAA,1],yerr=resostd[iAA,0],color=lineo.get_color(),fmt=markers[iAA], mfc='none',ms=msz, capsize=cpsz,markeredgewidth=mkedgwd)
     [bar.set_alpha(alpha) for bar in bars];[cap.set_alpha(alpha) for cap in caps]
     marker, caps, bars =ax1.errorbar(resravg[iAA,1],resravg[iAA,0],xerr=resrstd[iAA,1],yerr=resrstd[iAA,0],color=liner.get_color(),fmt=markers[iAA], mfc='none',ms=msz, capsize=cpsz,markeredgewidth=mkedgwd)
     [bar.set_alpha(alpha) for bar in bars];[cap.set_alpha(alpha) for cap in caps]
